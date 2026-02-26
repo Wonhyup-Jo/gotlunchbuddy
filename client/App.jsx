@@ -34,7 +34,7 @@ export default function App() {
     } else {
       setScreen('board');
     }
-  }, [token, activeTeams]);
+  }, [token, activeTeams.length]);
 
   if (screen === 'login') {
     return <Login onLogin={login} onGoRegister={() => setScreen('register')} />;
