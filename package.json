@@ -1,0 +1,30 @@
+{
+  "name": "gotlunchbuddy",
+  "version": "1.0.0",
+  "description": "Desktop widget for team lunch status sharing",
+  "main": "main.js",
+  "scripts": {
+    "server": "node server/index.js",
+    "build:client": "node esbuild.config.js",
+    "watch:client": "node esbuild.config.js --watch",
+    "dev": "concurrently \"npm run server\" \"npm run watch:client\" \"electron .\"",
+    "migrate": "knex migrate:latest",
+    "migrate:make": "knex migrate:make"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "electron": "^33.0.0",
+    "esbuild": "^0.24.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
