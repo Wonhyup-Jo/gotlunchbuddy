@@ -23,6 +23,11 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, 'client', 'index.html'));
 
+  // Open DevTools in development
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  }
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

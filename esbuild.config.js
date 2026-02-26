@@ -1,4 +1,12 @@
 const esbuild = require('esbuild');
+const fs = require('fs');
+const path = require('path');
+
+// Ensure output directory exists
+const distDir = path.join(__dirname, 'client', 'dist');
+if (!fs.existsSync(distDir)) {
+  fs.mkdirSync(distDir, { recursive: true });
+}
 
 const isWatch = process.argv.includes('--watch');
 

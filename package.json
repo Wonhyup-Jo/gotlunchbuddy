@@ -7,7 +7,7 @@
     "server": "node server/index.js",
     "build:client": "node esbuild.config.js",
     "watch:client": "node esbuild.config.js --watch",
-    "dev": "concurrently \"npm run server\" \"npm run watch:client\" \"electron .\"",
+    "dev": "npm run build:client && concurrently \"npm run server\" \"npm run watch:client\" \"electron .\"",
     "migrate": "knex migrate:latest",
     "migrate:make": "knex migrate:make"
   },
