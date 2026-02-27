@@ -123,6 +123,13 @@ export default function App() {
   return (
     <div style={styles.expandedRoot}>
       <div style={styles.panel}>
+        <button
+          style={styles.closeBtn}
+          onClick={() => window.close()}
+          title="Quit"
+        >
+          X
+        </button>
         {panelContent}
       </div>
       <div style={styles.bubbleRow}>
@@ -160,6 +167,26 @@ const styles = {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 22,
+    height: 22,
+    borderRadius: '50%',
+    border: 'none',
+    background: 'rgba(0,0,0,0.08)',
+    color: '#666',
+    fontSize: 11,
+    fontWeight: 700,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
+    lineHeight: 1,
   },
   bubbleRow: {
     display: 'flex',
