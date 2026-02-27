@@ -1,7 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { AvatarPreview } from './AvatarEditor.jsx';
 
-export default function FabBubble({ user, statusText, onToggle, expanded }) {
+const MAX_VISIBLE = 8;
+
+export default function FabBubble({ user, statusText, members, onToggle, expanded }) {
   const [hovered, setHovered] = useState(false);
   const dragRef = useRef({ startX: 0, startY: 0, winX: 0, winY: 0, moved: false });
 
@@ -47,34 +49,115 @@ export default function FabBubble({ user, statusText, onToggle, expanded }) {
     if (expanded) onToggle?.();
   }, [expanded, onToggle]);
 
+  // Expanded mode: single bubble at bottom-right
+  if (expanded) {
+    return (
+      <div style={styles.container}>
+        <div
+          style={{
+            ...styles.bubble,
+            transform: hovered ? 'scale(1.08)' : 'scale(1)',
+            boxShadow: hovered
+              ? '0 6px 24px rgba(230,126,34,0.4)'
+              : '0 4px 16px rgba(0,0,0,0.18)',
+          }}
+          onClick={handleClick}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {user ? (
+            <AvatarPreview config={user.avatar_config} size={44} />
+          ) : (
+            <div style={styles.placeholder}>?</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Collapsed mode: team cluster or single bubble
+  const showCluster = members && members.length > 0;
+
+  if (!showCluster) {
+    return (
+      <div
+        style={styles.container}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {hovered && statusText && (
+          <div style={styles.tooltip}>
+            {statusText}
+            <div style={styles.tooltipArrow} />
+          </div>
+        )}
+        <div
+          style={{
+            ...styles.bubble,
+            transform: hovered ? 'scale(1.08)' : 'scale(1)',
+            boxShadow: hovered
+              ? '0 6px 24px rgba(230,126,34,0.4)'
+              : '0 4px 16px rgba(0,0,0,0.18)',
+          }}
+          onMouseDown={handleMouseDown}
+        >
+          {user ? (
+            <AvatarPreview config={user.avatar_config} size={44} />
+          ) : (
+            <div style={styles.placeholder}>?</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Cluster mode: all team members in a pill
+  const visible = members.slice(0, MAX_VISIBLE);
+  const overflow = members.length - MAX_VISIBLE;
+
   return (
     <div
       style={styles.container}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Speech bubble tooltip */}
-      {hovered && statusText && !expanded && (
-        <div style={styles.tooltip}>
+      {hovered && statusText && (
+        <div style={styles.clusterTooltip}>
           {statusText}
-          <div style={styles.tooltipArrow} />
+          <div style={styles.clusterTooltipArrow} />
         </div>
       )}
       <div
         style={{
-          ...styles.bubble,
-          transform: hovered ? 'scale(1.08)' : 'scale(1)',
+          ...styles.cluster,
+          transform: hovered ? 'scale(1.03)' : 'scale(1)',
           boxShadow: hovered
-            ? '0 6px 24px rgba(230,126,34,0.4)'
-            : '0 4px 16px rgba(0,0,0,0.18)',
+            ? '0 6px 20px rgba(230,126,34,0.3)'
+            : '0 3px 12px rgba(0,0,0,0.12)',
         }}
-        onMouseDown={expanded ? undefined : handleMouseDown}
-        onClick={expanded ? handleClick : undefined}
+        onMouseDown={handleMouseDown}
       >
-        {user ? (
-          <AvatarPreview config={user.avatar_config} size={44} />
-        ) : (
-          <div style={styles.placeholder}>?</div>
+        {visible.map((m, i) => {
+          const isMe = m.user_id === user?.id;
+          return (
+            <div
+              key={m.user_id}
+              style={{
+                ...styles.memberAvatar,
+                ...(isMe ? styles.memberMe : {}),
+                marginLeft: i === 0 ? 0 : -8,
+                zIndex: visible.length - i,
+              }}
+              title={m.user_id + ': ' + (m.statusText || '(no status)')}
+            >
+              <AvatarPreview config={m.avatar_config} size={26} />
+            </div>
+          );
+        })}
+        {overflow > 0 && (
+          <div style={{ ...styles.overflowBadge, marginLeft: -8, zIndex: 0 }}>
+            +{overflow}
+          </div>
         )}
       </div>
     </div>
@@ -87,6 +170,7 @@ const styles = {
     display: 'inline-flex',
     alignItems: 'center',
   },
+  // Tooltip for single bubble (left side)
   tooltip: {
     position: 'absolute',
     right: 72,
@@ -115,6 +199,35 @@ const styles = {
     borderBottom: '6px solid transparent',
     borderLeft: '6px solid #333',
   },
+  // Tooltip for cluster (above)
+  clusterTooltip: {
+    position: 'absolute',
+    bottom: '100%',
+    right: 0,
+    marginBottom: 8,
+    background: '#333',
+    color: '#fff',
+    padding: '6px 12px',
+    borderRadius: 8,
+    fontSize: 12,
+    whiteSpace: 'nowrap',
+    maxWidth: 200,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    pointerEvents: 'none',
+    zIndex: 10,
+  },
+  clusterTooltipArrow: {
+    position: 'absolute',
+    bottom: -6,
+    right: 16,
+    width: 0,
+    height: 0,
+    borderLeft: '6px solid transparent',
+    borderRight: '6px solid transparent',
+    borderTop: '6px solid #333',
+  },
+  // Single bubble
   bubble: {
     width: 64,
     height: 64,
@@ -133,5 +246,47 @@ const styles = {
     fontSize: 24,
     fontWeight: 700,
     color: '#e67e22',
+  },
+  // Cluster pill
+  cluster: {
+    display: 'flex',
+    alignItems: 'center',
+    background: 'rgba(255,255,255,0.92)',
+    borderRadius: 24,
+    padding: '6px 14px',
+    cursor: 'pointer',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+    userSelect: 'none',
+    border: '2px solid rgba(230,126,34,0.25)',
+  },
+  memberAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '2px solid #fff',
+    position: 'relative',
+    flexShrink: 0,
+  },
+  memberMe: {
+    border: '2px solid #e67e22',
+  },
+  overflowBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: '#ecf0f1',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#666',
+    border: '2px solid #fff',
+    position: 'relative',
+    flexShrink: 0,
   },
 };

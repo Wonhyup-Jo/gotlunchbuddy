@@ -14,6 +14,7 @@ export default function App() {
   const [screen, setScreen] = useState('login');
   const [panelOpen, setPanelOpen] = useState(false);
   const [myStatusText, setMyStatusText] = useState('');
+  const [teamMembers, setTeamMembers] = useState([]);
 
   // Listen for panel toggle from Electron (hotkey / tray)
   useEffect(() => {
@@ -41,12 +42,21 @@ export default function App() {
     }
   }, [token, activeTeams.length]);
 
-  // Load my status for bubble tooltip
+  // Load team members + statuses for bubble cluster
   useEffect(() => {
     if (!token || !activeTeams.length || !user) return;
     const teamId = activeTeams[0].team_id;
-    api.getTeamStatuses(token, teamId).then((data) => {
-      const mine = data.find((s) => s.user_id === user.id);
+    Promise.all([
+      api.getTeamMembers(token, teamId),
+      api.getTeamStatuses(token, teamId),
+    ]).then(([members, statuses]) => {
+      const statusMap = {};
+      statuses.forEach((s) => { statusMap[s.user_id] = s.text; });
+      setTeamMembers(members.map((m) => ({
+        ...m,
+        statusText: statusMap[m.user_id] || '',
+      })));
+      const mine = statuses.find((s) => s.user_id === user.id);
       if (mine) setMyStatusText(mine.text);
     }).catch(() => {});
   }, [token, activeTeams.length, user]);
@@ -113,6 +123,7 @@ export default function App() {
         <FabBubble
           user={user}
           statusText={myStatusText}
+          members={teamMembers}
           onToggle={togglePanel}
           expanded={false}
         />
