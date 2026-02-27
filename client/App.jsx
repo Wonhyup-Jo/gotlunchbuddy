@@ -123,13 +123,20 @@ export default function App() {
   return (
     <div style={styles.expandedRoot}>
       <div style={styles.panel}>
-        <button
-          style={styles.closeBtn}
-          onClick={() => window.close()}
-          title="Quit"
-        >
-          X
-        </button>
+        <div style={styles.panelTopBar}>
+          {token && (
+            <button style={styles.logoutBtn} onClick={logout} title="Logout">
+              Logout
+            </button>
+          )}
+          <button
+            style={styles.closeBtn}
+            onClick={() => window.close()}
+            title="Quit"
+          >
+            X
+          </button>
+        </div>
         {panelContent}
       </div>
       <div style={styles.bubbleRow}>
@@ -169,10 +176,28 @@ const styles = {
     flexDirection: 'column',
     position: 'relative',
   },
-  closeBtn: {
+  panelTopBar: {
     position: 'absolute',
     top: 8,
     right: 8,
+    display: 'flex',
+    gap: 4,
+    alignItems: 'center',
+    zIndex: 20,
+  },
+  logoutBtn: {
+    height: 22,
+    padding: '0 8px',
+    borderRadius: 11,
+    border: 'none',
+    background: 'rgba(0,0,0,0.08)',
+    color: '#e74c3c',
+    fontSize: 10,
+    fontWeight: 600,
+    cursor: 'pointer',
+    lineHeight: 1,
+  },
+  closeBtn: {
     width: 22,
     height: 22,
     borderRadius: '50%',
@@ -185,7 +210,6 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 20,
     lineHeight: 1,
   },
   bubbleRow: {
