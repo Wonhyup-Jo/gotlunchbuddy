@@ -132,7 +132,7 @@ export default function TeamBoard({ token, user, activeTeams, onLogout }) {
 }
 
 const styles = {
-  container: { padding: 12, height: '100vh', overflowY: 'auto', display: 'flex', flexDirection: 'column' },
+  container: { padding: 12, height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column' },
   header: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     marginBottom: 8,

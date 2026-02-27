@@ -56,7 +56,7 @@ export default function Register({ onRegister, onGoLogin }) {
 const styles = {
   container: {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    justifyContent: 'center', height: '100vh', padding: 20, overflowY: 'auto',
+    justifyContent: 'center', height: '100%', padding: 20, overflowY: 'auto',
   },
   title: { fontSize: 20, marginBottom: 16, color: '#e67e22' },
   form: { display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 280 },

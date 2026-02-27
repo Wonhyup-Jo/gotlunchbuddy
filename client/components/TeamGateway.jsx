@@ -169,7 +169,7 @@ function SearchTab({ token, onDone }) {
 const styles = {
   container: {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    justifyContent: 'center', height: '100vh', padding: 20,
+    justifyContent: 'center', height: '100%', padding: 20,
   },
   title: { fontSize: 18, marginBottom: 4, color: '#e67e22' },
   subtitle: { fontSize: 12, color: '#999', marginBottom: 16 },

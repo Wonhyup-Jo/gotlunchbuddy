@@ -51,7 +51,7 @@ export default function Login({ onLogin, onGoRegister }) {
 const styles = {
   container: {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    justifyContent: 'center', height: '100vh', padding: 20,
+    justifyContent: 'center', height: '100%', padding: 20,
   },
   title: { fontSize: 22, marginBottom: 24, color: '#e67e22' },
   form: { display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 260 },
