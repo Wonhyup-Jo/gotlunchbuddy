@@ -5,8 +5,8 @@ let mainWindow;
 let tray;
 let isExpanded = false;
 
-const BUBBLE_W = 300;
-const BUBBLE_H = 80;
+const BUBBLE_W = 450;
+const BUBBLE_H = 120;
 const PANEL_W = 380;
 const PANEL_H = 560;
 

@@ -66,7 +66,7 @@ export default function FabBubble({ user, statusText, members, onToggle, expande
           onMouseLeave={() => setHovered(false)}
         >
           {user ? (
-            <AvatarPreview config={user.avatar_config} size={44} />
+            <AvatarPreview config={user.avatar_config} size={66} />
           ) : (
             <div style={styles.placeholder}>?</div>
           )}
@@ -102,7 +102,7 @@ export default function FabBubble({ user, statusText, members, onToggle, expande
           onMouseDown={handleMouseDown}
         >
           {user ? (
-            <AvatarPreview config={user.avatar_config} size={44} />
+            <AvatarPreview config={user.avatar_config} size={66} />
           ) : (
             <div style={styles.placeholder}>?</div>
           )}
@@ -111,52 +111,50 @@ export default function FabBubble({ user, statusText, members, onToggle, expande
     );
   }
 
-  // Cluster mode: all team members in a pill
+  // Cluster mode: all team members in a pill with status/avatar/id columns
   const visible = members.slice(0, MAX_VISIBLE);
   const overflow = members.length - MAX_VISIBLE;
 
   return (
-    <div
-      style={styles.container}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {hovered && statusText && (
-        <div style={styles.clusterTooltip}>
-          {statusText}
-          <div style={styles.clusterTooltipArrow} />
-        </div>
-      )}
+    <div style={styles.container}>
       <div
         style={{
           ...styles.cluster,
-          transform: hovered ? 'scale(1.03)' : 'scale(1)',
+          transform: hovered ? 'scale(1.02)' : 'scale(1)',
           boxShadow: hovered
             ? '0 6px 20px rgba(230,126,34,0.3)'
             : '0 3px 12px rgba(0,0,0,0.12)',
         }}
         onMouseDown={handleMouseDown}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        {visible.map((m, i) => {
+        {visible.map((m) => {
           const isMe = m.user_id === user?.id;
           return (
-            <div
-              key={m.user_id}
-              style={{
-                ...styles.memberAvatar,
-                ...(isMe ? styles.memberMe : {}),
-                marginLeft: i === 0 ? 0 : -8,
-                zIndex: visible.length - i,
-              }}
-              title={m.user_id + ': ' + (m.statusText || '(no status)')}
-            >
-              <AvatarPreview config={m.avatar_config} size={26} />
+            <div key={m.user_id} style={styles.memberColumn}>
+              <div style={styles.memberStatus}>
+                {m.statusText || '\u00A0'}
+              </div>
+              <div
+                style={{
+                  ...styles.memberAvatar,
+                  ...(isMe ? styles.memberMe : {}),
+                }}
+              >
+                <AvatarPreview config={m.avatar_config} size={36} />
+              </div>
+              <div style={{ ...styles.memberId, ...(isMe ? styles.memberIdMe : {}) }}>
+                {m.user_id}
+              </div>
             </div>
           );
         })}
         {overflow > 0 && (
-          <div style={{ ...styles.overflowBadge, marginLeft: -8, zIndex: 0 }}>
-            +{overflow}
+          <div style={styles.memberColumn}>
+            <div style={styles.memberStatus}>{'\u00A0'}</div>
+            <div style={styles.overflowBadge}>+{overflow}</div>
+            <div style={styles.memberId}>{'\u00A0'}</div>
           </div>
         )}
       </div>
@@ -173,7 +171,7 @@ const styles = {
   // Tooltip for single bubble (left side)
   tooltip: {
     position: 'absolute',
-    right: 72,
+    right: 104,
     top: '50%',
     transform: 'translateY(-50%)',
     background: '#333',
@@ -199,38 +197,10 @@ const styles = {
     borderBottom: '6px solid transparent',
     borderLeft: '6px solid #333',
   },
-  // Tooltip for cluster (above)
-  clusterTooltip: {
-    position: 'absolute',
-    bottom: '100%',
-    right: 0,
-    marginBottom: 8,
-    background: '#333',
-    color: '#fff',
-    padding: '6px 12px',
-    borderRadius: 8,
-    fontSize: 12,
-    whiteSpace: 'nowrap',
-    maxWidth: 200,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    pointerEvents: 'none',
-    zIndex: 10,
-  },
-  clusterTooltipArrow: {
-    position: 'absolute',
-    bottom: -6,
-    right: 16,
-    width: 0,
-    height: 0,
-    borderLeft: '6px solid transparent',
-    borderRight: '6px solid transparent',
-    borderTop: '6px solid #333',
-  },
-  // Single bubble
+  // Single bubble (1.5x scale)
   bubble: {
-    width: 64,
-    height: 64,
+    width: 96,
+    height: 96,
     borderRadius: '50%',
     background: '#fff',
     display: 'flex',
@@ -243,50 +213,82 @@ const styles = {
     border: '3px solid #e67e22',
   },
   placeholder: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 700,
     color: '#e67e22',
   },
   // Cluster pill
   cluster: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 4,
     background: 'rgba(255,255,255,0.92)',
-    borderRadius: 24,
-    padding: '6px 14px',
+    borderRadius: 16,
+    padding: '6px 10px',
     cursor: 'pointer',
     transition: 'transform 0.15s ease, box-shadow 0.15s ease',
     userSelect: 'none',
     border: '2px solid rgba(230,126,34,0.25)',
   },
+  memberColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: 50,
+    flexShrink: 0,
+  },
+  memberStatus: {
+    fontSize: 9,
+    color: '#e67e22',
+    fontWeight: 600,
+    width: 50,
+    textAlign: 'center',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    marginBottom: 2,
+    minHeight: 13,
+  },
   memberAvatar: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     borderRadius: '50%',
     background: '#fff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '2px solid #fff',
-    position: 'relative',
+    border: '2px solid #eee',
     flexShrink: 0,
   },
   memberMe: {
-    border: '2px solid #e67e22',
+    border: '3px solid #e67e22',
+  },
+  memberId: {
+    fontSize: 9,
+    color: '#666',
+    width: 50,
+    textAlign: 'center',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    marginTop: 2,
+  },
+  memberIdMe: {
+    color: '#e67e22',
+    fontWeight: 600,
   },
   overflowBadge: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     borderRadius: '50%',
     background: '#ecf0f1',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: 600,
     color: '#666',
     border: '2px solid #fff',
-    position: 'relative',
     flexShrink: 0,
   },
 };
