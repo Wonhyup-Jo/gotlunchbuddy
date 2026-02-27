@@ -82,7 +82,6 @@ export default function TeamBoard({ token, user, activeTeams, onLogout }) {
             </option>
           ))}
         </select>
-        <button style={styles.logoutBtn} onClick={onLogout}>Logout</button>
       </div>
 
       {/* Operator tools */}
@@ -139,11 +138,7 @@ const styles = {
   },
   teamSelect: {
     padding: '6px 10px', borderRadius: 6, border: '1px solid #ccc',
-    fontSize: 13, outline: 'none', flex: 1, marginRight: 8,
-  },
-  logoutBtn: {
-    padding: '6px 12px', borderRadius: 6, border: '1px solid #ccc',
-    background: '#fff', fontSize: 12, cursor: 'pointer', color: '#e74c3c',
+    fontSize: 13, outline: 'none', flex: 1,
   },
   operatorBtn: {
     width: '100%', padding: '6px 0', borderRadius: 6, border: 'none',
