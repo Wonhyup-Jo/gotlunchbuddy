@@ -31,6 +31,14 @@ export default function App() {
     }
   }, [token]);
 
+  // Clear data on logout
+  useEffect(() => {
+    if (!token) {
+      setTeamMembers([]);
+      setMyStatusText('');
+    }
+  }, [token]);
+
   // Determine screen based on auth state
   useEffect(() => {
     if (!token) {
